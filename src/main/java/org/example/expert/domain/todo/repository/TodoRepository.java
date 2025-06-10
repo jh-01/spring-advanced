@@ -13,7 +13,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Page<Todo> findAllByOrderByModifiedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"user"})
-    Optional<Todo> findByIdWithUser(Long todoId);
+    Optional<Todo> findById(Long todoId);
 
     int countById(Long todoId);
 }
