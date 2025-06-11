@@ -5,9 +5,12 @@ import lombok.Getter;
 @Getter
 public class SignupResponse {
 
+    private final long id;
+
     private final String bearerToken;
 
-    public SignupResponse(String bearerToken) {
+    public SignupResponse(long id, String bearerToken) {
+        this.id = id;
         this.bearerToken = bearerToken;
     }
 }
