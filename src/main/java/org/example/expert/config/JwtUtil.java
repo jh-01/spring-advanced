@@ -34,19 +34,26 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, String email, UserRole userRole) {
-        Date date = new Date();
-
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("email", email)
-                        .claim("userRole", userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+    public String createAccessToken(Long userId, String email, UserRole userRole) {
+        return BEARER_PREFIX + createToken(userId, email, userRole, 60 * 60 * 1000L); // 1시간
     }
+
+    public String createRefreshToken(Long userId, String email, UserRole userRole) {
+        return BEARER_PREFIX + createToken(userId, email, userRole, 14 * 24 * 60 * 60 * 1000L); // 14일
+    }
+
+    private String createToken(Long userId, String email, UserRole userRole, long expiryMillis) {
+        Date now = new Date();
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("email", email)
+                .claim("userRole", userRole)
+                .setExpiration(new Date(now.getTime() + expiryMillis))
+                .setIssuedAt(now)
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {

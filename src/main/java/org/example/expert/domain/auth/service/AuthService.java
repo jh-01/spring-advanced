@@ -7,6 +7,7 @@ import org.example.expert.domain.auth.dto.request.SigninRequest;
 import org.example.expert.domain.auth.dto.request.SignupRequest;
 import org.example.expert.domain.auth.dto.response.SigninResponse;
 import org.example.expert.domain.auth.dto.response.SignupResponse;
+import org.example.expert.domain.auth.dto.response.UserData;
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.user.entity.User;
@@ -39,11 +40,20 @@ public class AuthService {
                 encodedPassword,
                 userRole
         );
-        User savedUser = userRepository.save(newUser);
+        User user = userRepository.save(newUser);
 
-        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), userRole);
+        // 토큰 발급
+        String accessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getUserRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail(), user.getUserRole());
 
-        return new SignupResponse(savedUser.getId(), bearerToken);
+        // 유저 정보 DTO
+        UserData userData = new UserData(
+                user.getId(),
+                user.getEmail(),
+                user.getUserRole()
+        );
+
+        return new SignupResponse(user.getId(), accessToken, refreshToken, userData);
     }
 
     @Transactional(readOnly = true)
@@ -56,8 +66,17 @@ public class AuthService {
             throw new AuthException("잘못된 비밀번호입니다.");
         }
 
-        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+        // 토큰 발급
+        String accessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getUserRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail(), user.getUserRole());
 
-        return new SigninResponse(bearerToken);
+        // 유저 정보 DTO
+        UserData userData = new UserData(
+                user.getId(),
+                user.getEmail(),
+                user.getUserRole()
+        );
+
+        return new SigninResponse(accessToken, refreshToken, userData);
     }
 }
