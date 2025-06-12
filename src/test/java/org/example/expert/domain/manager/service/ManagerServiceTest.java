@@ -57,7 +57,8 @@ class ManagerServiceTest {
         long managerUserId = 2L;
 
         Todo todo = new Todo();
-        ReflectionTestUtils.setField(todo, "user", null);
+        User user = User.fromAuthUser(authUser);
+        ReflectionTestUtils.setField(todo, "user", user);
 
         ManagerSaveRequest managerSaveRequest = new ManagerSaveRequest(managerUserId);
 
