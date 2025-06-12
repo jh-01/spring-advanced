@@ -7,9 +7,9 @@ import org.example.expert.domain.auth.dto.request.SigninRequest;
 import org.example.expert.domain.auth.dto.request.SignupRequest;
 import org.example.expert.domain.auth.dto.response.SigninResponse;
 import org.example.expert.domain.auth.dto.response.SignupResponse;
-import org.example.expert.domain.auth.dto.response.UserData;
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.example.expert.domain.user.repository.UserRepository;
@@ -47,10 +47,9 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail(), user.getUserRole());
 
         // 유저 정보 DTO
-        UserData userData = new UserData(
+        UserResponse userData = new UserResponse(
                 user.getId(),
-                user.getEmail(),
-                user.getUserRole()
+                user.getEmail()
         );
 
         return new SignupResponse(user.getId(), accessToken, refreshToken, userData);
@@ -71,10 +70,9 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail(), user.getUserRole());
 
         // 유저 정보 DTO
-        UserData userData = new UserData(
+        UserResponse userData = new UserResponse(
                 user.getId(),
-                user.getEmail(),
-                user.getUserRole()
+                user.getEmail()
         );
 
         return new SigninResponse(accessToken, refreshToken, userData);
